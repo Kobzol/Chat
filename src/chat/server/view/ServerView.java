@@ -10,6 +10,8 @@ import chat.server.chat.ChattingRoom;
 import chat.server.chat.IChatter;
 import chat.server.controller.ServerController;
 import chat.server.gui.MainWindow;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.DefaultListModel;
 
 /**
@@ -34,10 +36,16 @@ public class ServerView {
         this.setEvents();
     }
     
+    /**
+     * Shows the main window.
+     */
     public void show() {
         this.window.setVisible(true);
     }
     
+    /**
+     * Sets the UI events.
+     */
     private void setEvents() {
         this.chattingRoom.addChangeListener(new ChattingRoom.ChattingRoomChangedListener() {
             @Override
@@ -53,6 +61,9 @@ public class ServerView {
         this.window.getChattersList().setModel(this.chattersModel);
     }
     
+    /**
+     * Refreshes the list of connected chatters.
+     */
     private void refreshChattersList() {
         chattersModel.clear();
                 
@@ -61,7 +72,15 @@ public class ServerView {
             chattersModel.addElement(chatter);
         }
     }
+    /**
+     * Appends a chat message to the message text area.
+     * @param message chat message
+     */
     private void appendMessage(ChatMessage message) {
-        window.getChatMessagesArea().append("\n" + message.getMessage());
+        String formattedMessage = message.getOwner().getName();
+        formattedMessage += ": " + message.getMessage();
+        formattedMessage += " [" + message.getCreationTime() + "]" + System.lineSeparator();
+        
+        window.getChatMessagesArea().append(formattedMessage);
     }
 }
