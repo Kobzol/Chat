@@ -5,14 +5,22 @@
  */
 package chat.server.net;
 
+import java.io.Serializable;
+
 /**
  * Wrapper class around a socket.
  */
 public interface IClient {
     public static interface MessageReceivedListener {
-        void onMessageReceived(String message);
+        void onMessageReceived(Serializable serializable);
     }
     
-    void write(byte[] buffer, int length);
+    /**
+     * Writes a serializable object to the output stream.
+     * @param serializable serializable object
+     * @return True if the write was successful, otherwise false.
+     */
+    boolean write(Serializable serializable);
+    boolean isConnected();
     void addMessageReceivedListener(MessageReceivedListener listener);
 }

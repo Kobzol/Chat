@@ -12,8 +12,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * TCP/IP server implementatino.
@@ -43,15 +41,25 @@ public class TcpServer implements IServer {
         this.connectionListeners = new ArrayList<>();
     }
     
+    private void receiveClient(TcpClient client) {
+        this.connectedClients.add(client);
+        
+        for (ServerConnectionListener listener : this.connectionListeners)
+        {
+            listener.onClientConnected(client);
+        }
+    }
+    
     @Override
     public void startListening() {
         if (this.state == ServerState.Running) return;
         
         try {
             this.server.bind(this.serverAddress);
+            this.state = ServerState.Running;
         }
         catch (IOException ex) {
-            Logger.getLogger(TcpServer.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex);
         }
         
         this.serverRunner = new Thread(new Runnable() {
@@ -61,11 +69,12 @@ public class TcpServer implements IServer {
                 {
                     try {
                         Socket client = server.accept();
+                        TcpClient tcpClient = new TcpClient(client);
                         
-                        System.out.println(client.getPort());
+                        receiveClient(tcpClient);
                         
                     } catch (IOException ex) {
-                        Logger.getLogger(TcpServer.class.getName()).log(Level.SEVERE, null, ex);
+                        System.err.println(ex);
                         break;
                     }
                 }
@@ -83,7 +92,7 @@ public class TcpServer implements IServer {
             this.serverRunner.interrupt();
             this.server.close();
         } catch (IOException ex) {
-            Logger.getLogger(TcpServer.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex);
         }
     }
 
