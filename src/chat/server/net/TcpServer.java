@@ -67,15 +67,17 @@ public class TcpServer implements IServer {
             public void run() {
                 while (state == ServerState.Running && !serverRunner.isInterrupted())
                 {
-                    try {
+                    try
+                    {
                         Socket client = server.accept();
                         TcpClient tcpClient = new TcpClient(client);
                         
                         receiveClient(tcpClient);
                         
-                    } catch (IOException ex) {
-                        System.err.println(ex);
-                        break;
+                    }
+                    catch (IOException ex)
+                    {
+                        ex.printStackTrace();
                     }
                 }
             }
@@ -87,12 +89,15 @@ public class TcpServer implements IServer {
 
     @Override
     public void stopListening() {
-        try {
+        try
+        {
             this.state = ServerState.Stopped;
             this.serverRunner.interrupt();
             this.server.close();
-        } catch (IOException ex) {
-            System.err.println(ex);
+        }
+        catch (IOException ex)
+        {
+            ex.printStackTrace();
         }
     }
 

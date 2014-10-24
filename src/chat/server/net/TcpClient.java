@@ -41,10 +41,12 @@ public class TcpClient implements IClient {
                         Serializable object = (Serializable) ois.readObject();
                         receiveMessage(object);
                     }
+                    
+                    ois.close();
                 }
                 catch (Exception e)
                 {
-                    System.err.println(e);
+                    // client disconnected or error occured
                 }
                 finally
                 {
@@ -73,7 +75,7 @@ public class TcpClient implements IClient {
         }
         catch (Exception e)
         {
-            System.err.println(e);
+            e.printStackTrace();
         }
         
         return false;
@@ -100,9 +102,14 @@ public class TcpClient implements IClient {
                 this.inputListener.interrupt();
             }
             
-            this.socket.getInputStream().close();
-            this.socket.getOutputStream().close();
-            
+            if (!this.socket.isInputShutdown())
+            {
+                this.socket.getInputStream().close();
+            }
+            if (!this.socket.isOutputShutdown())
+            {
+                this.socket.getOutputStream().close();
+            }
             if (!this.socket.isClosed())
             {
                 this.socket.close();
@@ -110,7 +117,7 @@ public class TcpClient implements IClient {
         }
         catch (Exception e)
         {
-            System.err.println(e);
+            
         }
     }
 }
