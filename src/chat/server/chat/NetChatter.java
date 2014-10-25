@@ -7,6 +7,8 @@ package chat.server.chat;
 
 import chat.server.net.IClient;
 import chat.server.net.IClient.ClientEventListener;
+import chat.server.net.MessageInterpreter;
+import chat.server.net.NetMessage;
 import java.io.Serializable;
 
 /**
@@ -16,12 +18,14 @@ import java.io.Serializable;
 public class NetChatter implements IChatter {
     private final IClient client;
     private final ChattingRoom chattingRoom;
+    private final MessageInterpreter interpreter;
     
     private String name = "";
     
     public NetChatter(IClient client, ChattingRoom chattingRoom) {
         this.client = client;
         this.chattingRoom = chattingRoom;
+        this.interpreter = new MessageInterpreter();
         
         this.setEvents();
     }
@@ -32,7 +36,7 @@ public class NetChatter implements IChatter {
         this.client.addClientEventListener(new ClientEventListener() {
             @Override
             public void onMessageReceived(Serializable serializable) {
-                handleMessage(serializable);
+                handleMessage(interpreter.interpret(serializable));
             }
 
             @Override
@@ -52,8 +56,8 @@ public class NetChatter implements IChatter {
         this.chattingRoom.addChatter(this);
     }
     
-    private void handleMessage(Serializable serializable) {
-        this.setNameAndRegister(serializable.toString());
+    private void handleMessage(NetMessage message) {
+        System.out.println(message.getPayload());
     }
     
     @Override
