@@ -5,6 +5,8 @@
  */
 package chat.server.net;
 
+import java.util.List;
+
 /**
  * Represents a server that listens for incoming connections
  * and returns instances of connected IClients.
@@ -17,4 +19,5 @@ public interface IServer {
     void startListening();
     void stopListening();
     void setServerConnectionListener(ServerConnectionListener listener);
+    List<IClient> getClients();
 }

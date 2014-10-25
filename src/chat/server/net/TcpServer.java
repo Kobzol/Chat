@@ -50,6 +50,10 @@ public class TcpServer implements IServer {
         }
     }
     
+    public List<IClient> getClients() {
+        return this.connectedClients;
+    }
+    
     @Override
     public void startListening() {
         if (this.state == ServerState.Running) return;
