@@ -9,6 +9,7 @@ import chat.server.net.IClient;
 import chat.server.net.IClient.ClientEventListener;
 import chat.server.net.MessageInterpreter;
 import chat.server.net.NetMessage;
+import chat.server.net.NetMessage.NetMessageType;
 import java.io.Serializable;
 
 /**
@@ -56,8 +57,20 @@ public class NetChatter implements IChatter {
         this.chattingRoom.addChatter(this);
     }
     
+    private void sendChatMessage(String message) {
+        ChatMessage msg = new ChatMessage(this, message);
+        this.chattingRoom.receiveMessage(msg);
+    }
+    
     private void handleMessage(NetMessage message) {
-        System.out.println(message.getPayload());
+        if (message.getType() == NetMessageType.SET_NAME)
+        {
+            this.setNameAndRegister((String) message.getPayload());
+        }
+        else if (message.getType() == NetMessageType.SEND_CHAT_MESSAGE)
+        {
+            this.sendChatMessage((String) message.getPayload());
+        }
     }
     
     @Override

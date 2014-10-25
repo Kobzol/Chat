@@ -12,20 +12,31 @@ import java.io.Serializable;
  * @param <T> payload type
  */
 public class NetMessage<T> implements Serializable {
+    public static enum NetMessageType {
+        SET_NAME,
+        SEND_CHAT_MESSAGE
+    }
+    
+    private final NetMessageType type;
     private final boolean success;
     private final T payload;
     
-    public NetMessage(T payload) {
-        this(payload, true);
+    public NetMessage(NetMessageType type, T payload) {
+        this(type, payload, true);
     }
     
-    public NetMessage(boolean success) {
-        this(null, success);
+    public NetMessage(NetMessageType type, boolean success) {
+        this(type, null, success);
     }
     
-    public NetMessage(T payload, boolean success) {
+    public NetMessage(NetMessageType type, T payload, boolean success) {
+        this.type = type;
         this.payload = payload;
         this.success = success;
+    }
+    
+    public NetMessageType getType() {
+        return this.type;
     }
     
     public boolean isSuccessful() {

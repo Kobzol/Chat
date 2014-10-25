@@ -65,6 +65,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel4.setText("Port");
 
+        portField.setEditable(false);
+
         startButton.setText("Start listening");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

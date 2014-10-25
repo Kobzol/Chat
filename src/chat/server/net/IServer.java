@@ -5,6 +5,7 @@
  */
 package chat.server.net;
 
+import java.net.InetAddress;
 import java.util.List;
 
 /**
@@ -20,4 +21,5 @@ public interface IServer {
     void stopListening();
     void setServerConnectionListener(ServerConnectionListener listener);
     List<IClient> getClients();
+    int getPort();
 }

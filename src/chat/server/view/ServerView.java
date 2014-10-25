@@ -12,6 +12,7 @@ import chat.server.controller.ServerController;
 import chat.server.gui.MainWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 import javax.swing.DefaultListModel;
 
 /**
@@ -59,6 +60,13 @@ public class ServerView {
             }
         });       
         this.window.getChattersList().setModel(this.chattersModel);
+        
+        this.window.getStartButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                window.getPortField().setText(controller.startServer() + "");
+            }
+        });
     }
     
     /**
@@ -79,7 +87,7 @@ public class ServerView {
     private void appendMessage(ChatMessage message) {
         String formattedMessage = message.getOwner().getName();
         formattedMessage += ": " + message.getMessage();
-        formattedMessage += " [" + message.getCreationTime() + "]" + System.lineSeparator();
+        formattedMessage += " [" + message.getCreationTime().get(Calendar.HOUR) + ":" + message.getCreationTime().get(Calendar.MINUTE) + ":" + message.getCreationTime().get(Calendar.SECOND) + "]" + System.lineSeparator();
         
         window.getChatMessagesArea().append(formattedMessage);
     }

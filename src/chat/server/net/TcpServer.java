@@ -64,6 +64,7 @@ public class TcpServer implements IServer {
         });
     }
     
+    @Override
     public List<IClient> getClients() {
         return this.connectedClients;
     }
@@ -123,5 +124,10 @@ public class TcpServer implements IServer {
     @Override
     public void setServerConnectionListener(ServerConnectionListener listener) {
         this.connectionListeners.add(listener);
+    }
+
+    @Override
+    public int getPort() {
+        return this.server.getLocalPort();
     }
 }

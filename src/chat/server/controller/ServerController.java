@@ -25,7 +25,6 @@ public class ServerController {
     
     public ServerController() {
         this.chattingRoom = new ChattingRoom();
-        this.startServer();
     }
     
     public void setView(ServerView view) {
@@ -36,8 +35,12 @@ public class ServerController {
         return this.chattingRoom;
     }
     
-    public void startServer() {
-        int port = 1339;
+    /**
+     * Start the server and returns the bound port.
+     * @return port on which the server listens
+     */
+    public final int startServer() {
+        int port = 0;   // automatic port
         
         try
         {
@@ -45,10 +48,13 @@ public class ServerController {
             this.server.startListening();
             
             this.chatterManager = new ChatterManager(this.server, this.chattingRoom);
+            
+            return this.server.getPort();
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            return 0;
         }
     }
 }
