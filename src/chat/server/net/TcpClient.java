@@ -16,14 +16,14 @@ import java.util.List;
  * TCP/IP implementation of client.
  */
 public class TcpClient implements IClient {
-    private final List<MessageReceivedListener> messageListeners;
+    private final List<ClientEventListener> eventListeners;
     private final Socket socket;
     
     private Thread inputListener;
     
     public TcpClient(Socket socket) {
         this.socket = socket;
-        this.messageListeners = new ArrayList<>();
+        this.eventListeners = new ArrayList<>();
         
         this.startListening();
     }
@@ -58,7 +58,7 @@ public class TcpClient implements IClient {
         this.inputListener.start();
     }
     private void receiveMessage(Serializable object) {
-        for (MessageReceivedListener listener : this.messageListeners)
+        for (ClientEventListener listener : this.eventListeners)
         {
             listener.onMessageReceived(object);
         }
@@ -87,8 +87,8 @@ public class TcpClient implements IClient {
     }
     
     @Override
-    public void addMessageReceivedListener(MessageReceivedListener listener) {
-        this.messageListeners.add(listener);
+    public void addClientEventListener(ClientEventListener listener) {
+        this.eventListeners.add(listener);
     }
     
     /**

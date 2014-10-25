@@ -11,8 +11,9 @@ import java.io.Serializable;
  * Wrapper class around a socket.
  */
 public interface IClient {
-    public static interface MessageReceivedListener {
+    public static interface ClientEventListener {
         void onMessageReceived(Serializable serializable);
+        void onClientDisconnected();
     }
     
     /**
@@ -22,5 +23,5 @@ public interface IClient {
      */
     boolean write(Serializable serializable);
     boolean isConnected();
-    void addMessageReceivedListener(MessageReceivedListener listener);
+    void addClientEventListener(ClientEventListener listener);
 }
