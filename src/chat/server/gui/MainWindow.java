@@ -46,6 +46,7 @@ public class MainWindow extends javax.swing.JFrame {
         startButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Chat server");
 
         chatMessagesArea.setEditable(false);
         chatMessagesArea.setColumns(20);

@@ -16,6 +16,8 @@ import chat.server.view.ServerView;
  * @author Jakub
  */
 public class ServerController {
+    private static final int SERVER_PORT = 1340;
+    
     private ServerView view;
     
     private final ChattingRoom chattingRoom;
@@ -39,12 +41,10 @@ public class ServerController {
      * Start the server and returns the bound port.
      * @return port on which the server listens
      */
-    public final int startServer() {
-        int port = 0;   // automatic port
-        
+    public final int startServer() {       
         try
         {
-            this.server = new TcpServer(port);
+            this.server = new TcpServer(ServerController.SERVER_PORT);
             this.server.startListening();
             
             this.chatterManager = new ChatterManager(this.server, this.chattingRoom);

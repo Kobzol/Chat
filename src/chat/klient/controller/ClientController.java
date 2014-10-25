@@ -5,6 +5,10 @@
  */
 package chat.klient.controller;
 
+import chat.klient.chat.IClientChatter;
+import chat.klient.chat.NetClientChatter;
+import chat.klient.net.IClientConnector;
+import chat.klient.net.TcpClientConnector;
 import chat.server.chat.ChattingRoom;
 import javax.swing.JFrame;
 
@@ -15,6 +19,7 @@ public class ClientController {
     private JFrame view;
     
     private final ChattingRoom chattingRoom;
+    private IClientChatter chatter;
     
     public ClientController() {
         this.chattingRoom = new ChattingRoom();
@@ -28,7 +33,30 @@ public class ClientController {
         this.view = view;
     }
     
-    public boolean connectToServer(String address, int port, String protocol) {
+    public boolean connectToServer(String clientName, String address, int port, String protocol) {
+        IClientConnector client = null;
+        
+        if (protocol.equals("TCP/IP"))
+        {
+            try
+            {
+                client = new TcpClientConnector(address, port);
+            }
+            catch (Exception ex)
+            {
+                System.err.println(ex);
+                
+                return false;
+            }
+        }
+        else if (protocol.equals("UDP"))
+        {
+            
+        }
+        else return false;
+        
+        this.chatter = new NetClientChatter(clientName, client);
+        
         return true;
     }
     
