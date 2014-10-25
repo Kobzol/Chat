@@ -5,23 +5,34 @@
  */
 package chat.klient.gui;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import chat.klient.controller.ClientController;
+import chat.server.chat.ChatMessage;
+import chat.server.chat.ChattingRoom.ChattingRoomChangedListener;
+import chat.server.chat.IChatter;
+import java.util.Calendar;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Jakub
  */
 public class MainWindow extends javax.swing.JFrame {
-
+    private final ClientController controller;
+    private final DefaultListModel chattersModel = new DefaultListModel();
+    
+    
     /**
      * Creates new form MainWindow
+     * @param controller client controller
      */
-    public MainWindow() {
+    public MainWindow(ClientController controller) {
+        this.controller = controller;
+        this.controller.setView(this);
+        
         initComponents();
+        
+        this.setEvents();
     }
 
     /**
@@ -47,10 +58,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         connectButton = new javax.swing.JButton();
         messageArea = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        messageField = new javax.swing.JTextArea();
         sendButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Chat client");
 
         chatMessagesArea.setEditable(false);
         chatMessagesArea.setColumns(20);
@@ -70,15 +82,28 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel4.setText("Port");
 
+        portField.setText("1340");
+
         jLabel5.setText("Server IP");
 
         connectButton.setText("Connect");
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(2);
-        messageArea.setViewportView(jTextArea1);
+        messageField.setColumns(20);
+        messageField.setRows(2);
+        messageArea.setViewportView(messageField);
 
         sendButton.setText("Send");
+        sendButton.setEnabled(false);
+        sendButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -146,30 +171,68 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public JTextArea getChatMessagesArea() {
-        return this.chatMessagesArea;
-    }
-    
-    public JList getChattersList() {
-        return this.chattersList;
-    }
-    
-    public JComboBox getProtocolComboBox() {
-        return this.protocolComboBox;
-    }
-    
-    public JTextField getPortField() {
-        return this.portField;
-    }
-    
-    public JTextField getAddressField() {
-        return this.serverField;
-    }
-    
-    public JButton getConnectButton() {
-        return this.connectButton;
-    }
+    private void setEvents() {
+        this.controller.getChattingRoom().addChangeListener(new ChattingRoomChangedListener(){
+            @Override
+            public void onMessageReceived(ChatMessage message) {
+                appendMessage(message);
+            }
 
+            @Override
+            public void onChattersChanged() {
+                refreshChattersList();
+            }
+        });
+        
+        this.chattersList.setModel(this.chattersModel);
+    }
+    
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        String address = this.serverField.getText();
+        int port = Integer.parseInt(this.portField.getText());
+        String protocol = this.protocolComboBox.getSelectedItem().toString();
+        
+        if (this.controller.connectToServer(address, port, protocol))
+        {
+            this.connectButton.setEnabled(false);
+            this.sendButton.setEnabled(true);
+        }
+        else JOptionPane.showMessageDialog(this, "Nepovedlo se připojit k chatovacímu serveru.");
+    }//GEN-LAST:event_connectButtonActionPerformed
+
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        String message = this.messageField.getText();
+        
+        if (this.controller.sendMessage(message))
+        {
+            this.messageField.setText("");
+        }
+        else JOptionPane.showMessageDialog(this, "Nepodařilo se odeslat zprávu.");
+    }//GEN-LAST:event_sendButtonActionPerformed
+
+    /**
+     * Refreshes the list of connected chatters.
+     */
+    private void refreshChattersList() {
+        this.chattersModel.clear();
+                
+        for (IChatter chatter : this.controller.getChattingRoom().getChatters())
+        {
+            this.chattersModel.addElement(chatter);
+        }
+    }
+    /**
+     * Appends a chat message to the message text area.
+     * @param message chat message
+     */
+    private void appendMessage(ChatMessage message) {
+        String formattedMessage = message.getOwner().getName();
+        formattedMessage += ": " + message.getMessage();
+        formattedMessage += " [" + message.getCreationTime().get(Calendar.HOUR) + ":" + message.getCreationTime().get(Calendar.MINUTE) + ":" + message.getCreationTime().get(Calendar.SECOND) + "]" + System.lineSeparator();
+        
+        this.chatMessagesArea.append(formattedMessage);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea chatMessagesArea;
     private javax.swing.JList chattersList;
@@ -181,8 +244,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JScrollPane messageArea;
+    private javax.swing.JTextArea messageField;
     private javax.swing.JTextField portField;
     private javax.swing.JComboBox protocolComboBox;
     private javax.swing.JButton sendButton;
