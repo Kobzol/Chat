@@ -6,6 +6,8 @@
 package chat.server.net;
 
 import chat.server.chat.ChattingRoom;
+import chat.server.chat.IChatter;
+import chat.server.chat.NetChatter;
 import chat.server.net.IServer.ServerConnectionListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,7 @@ public class ChatterManager {
     }
     
     private void registerChatter(IClient client) {
-        //IChatter chatter = this.createChatter(client);
+        IChatter chatter = new NetChatter(client, chattingRoom);
         this.notifyChange();
     }
 }
