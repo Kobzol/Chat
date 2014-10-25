@@ -19,21 +19,23 @@ import java.util.List;
 public class TcpClientConnector implements IClientConnector {
     private final List<ClientEventListener> eventListeners;
     private final Socket socket;
+    private final ObjectOutputStream oos;
     
     private Thread inputListener;
     
     public TcpClientConnector(String address, int port) throws IOException {
         this.socket = new Socket(address, port);
+        this.oos = new ObjectOutputStream(this.socket.getOutputStream());
         this.eventListeners = new ArrayList<>();
         
         this.startListening();
     }
 
     @Override
-    public boolean write(Serializable serializable) {
+    public synchronized boolean write(Serializable serializable) {
         try
         {
-            new ObjectOutputStream(this.socket.getOutputStream()).writeObject(serializable);
+            this.oos.writeObject(serializable);
             return true;
         }
         catch (IOException ex)

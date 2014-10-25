@@ -6,6 +6,8 @@
 package chat.klient.chat;
 
 import chat.klient.net.IClientConnector;
+import chat.server.net.NetMessage;
+import chat.server.net.NetMessage.NetMessageType;
 
 /**
  * Chatter that send messages using the internet.
@@ -17,6 +19,13 @@ public class NetClientChatter implements IClientChatter {
     public NetClientChatter(String name, IClientConnector client) {
         this.name = name;
         this.client = client;
+        
+        this.sendName(this.name);
+    }
+    
+    private void sendName(String name) {
+        NetMessage<String> msg = new NetMessage<>(NetMessageType.SET_NAME, name);
+        this.client.write(msg);
     }
     
     @Override
@@ -26,6 +35,7 @@ public class NetClientChatter implements IClientChatter {
 
     @Override
     public void sendMessage(String message) {
-        
+        NetMessage<String> msg = new NetMessage<>(NetMessageType.SEND_CHAT_MESSAGE, message);
+        this.client.write(msg);
     }
 }

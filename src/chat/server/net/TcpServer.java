@@ -80,7 +80,7 @@ public class TcpServer implements IServer {
         }
         catch (IOException ex)
         {
-            System.err.println(ex);
+            ex.printStackTrace();
         }
         
         this.serverRunner = new Thread(new Runnable() {

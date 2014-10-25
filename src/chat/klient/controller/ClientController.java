@@ -61,6 +61,8 @@ public class ClientController {
     }
     
     public boolean sendMessage(String message) {
+        this.chatter.sendMessage(message);
+        
         return true;
     }
 }

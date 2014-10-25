@@ -38,15 +38,17 @@ public class TcpClient implements IClient {
                         
                     while (!inputListener.isInterrupted())
                     {
-                        Serializable object = (Serializable) ois.readObject();
-                        receiveMessage(object);
+                        synchronized(ois) {
+                            Serializable object = (Serializable) ois.readObject();
+                            receiveMessage(object);
+                        }
                     }
                     
                     ois.close();
                 }
                 catch (Exception e)
                 {
-                    // client disconnected or error occured
+                    e.printStackTrace();
                 }
                 finally
                 {
@@ -65,7 +67,7 @@ public class TcpClient implements IClient {
     }
     
     @Override
-    public boolean write(Serializable serializable) {
+    public synchronized boolean write(Serializable serializable) {
         try
         {
             ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());

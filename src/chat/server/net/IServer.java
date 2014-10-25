@@ -5,7 +5,6 @@
  */
 package chat.server.net;
 
-import java.net.InetAddress;
 import java.util.List;
 
 /**
