@@ -24,8 +24,6 @@ public class NetChatter implements IChatter {
         this.chattingRoom = chattingRoom;
         
         this.setEvents();
-        
-        this.chattingRoom.addChatter(this);
     }
     
     private void setEvents() {
@@ -49,7 +47,17 @@ public class NetChatter implements IChatter {
         return this.name;
     }
     
+    private void setNameAndRegister(String name) {
+        this.name = name;
+        this.chattingRoom.addChatter(this);
+    }
+    
     private void handleMessage(Serializable serializable) {
-        System.out.println(serializable);
+        this.setNameAndRegister(serializable.toString());
+    }
+    
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

@@ -5,7 +5,9 @@
  */
 package chat.server.net;
 
+import chat.server.net.IClient.ClientEventListener;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -41,13 +43,25 @@ public class TcpServer implements IServer {
         this.connectionListeners = new ArrayList<>();
     }
     
-    private void receiveClient(TcpClient client) {
+    private void receiveClient(final TcpClient client) {
         this.connectedClients.add(client);
         
         for (ServerConnectionListener listener : this.connectionListeners)
         {
             listener.onClientConnected(client);
         }
+        
+        client.addClientEventListener(new ClientEventListener() {
+            @Override
+            public void onMessageReceived(Serializable serializable) {
+                
+            }
+
+            @Override
+            public void onClientDisconnected() {
+                connectedClients.remove(client);
+            }
+        });
     }
     
     public List<IClient> getClients() {
@@ -58,11 +72,13 @@ public class TcpServer implements IServer {
     public void startListening() {
         if (this.state == ServerState.Running) return;
         
-        try {
+        try
+        {
             this.server.bind(this.serverAddress);
             this.state = ServerState.Running;
         }
-        catch (IOException ex) {
+        catch (IOException ex)
+        {
             System.err.println(ex);
         }
         
@@ -87,8 +103,7 @@ public class TcpServer implements IServer {
             }
         });
         
-        this.serverRunner.start();
-        
+        this.serverRunner.start();  
     }
 
     @Override

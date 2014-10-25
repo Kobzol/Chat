@@ -91,6 +91,13 @@ public class TcpClient implements IClient {
         this.eventListeners.add(listener);
     }
     
+    private void notifyClientDisconnected() {
+        for (ClientEventListener listener : this.eventListeners)
+        {
+            listener.onClientDisconnected();
+        }
+    }
+    
     /**
      * Cleans up resources.
      */
@@ -118,6 +125,10 @@ public class TcpClient implements IClient {
         catch (Exception e)
         {
             
+        }
+        finally
+        {
+            this.notifyClientDisconnected();
         }
     }
 }

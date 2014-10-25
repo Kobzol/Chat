@@ -6,6 +6,9 @@
 package chat.server.controller;
 
 import chat.server.chat.ChattingRoom;
+import chat.server.net.ChatterManager;
+import chat.server.net.IServer;
+import chat.server.net.TcpServer;
 import chat.server.view.ServerView;
 
 /**
@@ -14,10 +17,15 @@ import chat.server.view.ServerView;
  */
 public class ServerController {
     private ServerView view;
-    private ChattingRoom chattingRoom;
+    
+    private final ChattingRoom chattingRoom;
+    
+    private ChatterManager chatterManager;
+    private IServer server;
     
     public ServerController() {
         this.chattingRoom = new ChattingRoom();
+        this.startServer();
     }
     
     public void setView(ServerView view) {
@@ -26,5 +34,21 @@ public class ServerController {
     
     public ChattingRoom getChattingRoom() {
         return this.chattingRoom;
+    }
+    
+    public void startServer() {
+        int port = 1339;
+        
+        try
+        {
+            this.server = new TcpServer(port);
+            this.server.startListening();
+            
+            this.chatterManager = new ChatterManager(this.server, this.chattingRoom);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
