@@ -6,14 +6,16 @@
 package chat.klient.net;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,6 +25,9 @@ public class UdpClientConnector implements IClientConnector {
     private final List<ClientEventListener> eventListeners;
     private final MulticastSocket socket;
     
+    private final String address;
+    private final int port;
+    
     private Thread inputListener;
     
     public UdpClientConnector(String address, int port) throws IOException {
@@ -30,13 +35,26 @@ public class UdpClientConnector implements IClientConnector {
         this.socket = new MulticastSocket(port);
         socket.joinGroup(InetAddress.getByName(address));
         
+        this.address = address;
+        this.port = port;
+        
         this.startListening();
     }
             
     @Override
     public boolean write(Serializable serializable) {
         byte[] buffer = serializable.toString().getBytes();
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        DatagramPacket packet = null;
+        
+        try
+        {
+            packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.address), this.port);
+        }
+        catch (UnknownHostException ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
         
         try
         {

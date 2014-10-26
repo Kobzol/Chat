@@ -10,10 +10,10 @@ import chat.klient.chat.NetClientChatter;
 import chat.klient.gui.MainWindow;
 import chat.klient.net.IClientConnector;
 import chat.klient.net.TcpClientConnector;
+import chat.klient.net.UdpClientConnector;
 import chat.server.chat.ChattingRoom;
 import chat.server.net.IClient.ClientEventListener;
 import java.io.Serializable;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -40,23 +40,23 @@ public class ClientController {
     public boolean connectToServer(String clientName, String address, int port, String protocol) {
         IClientConnector client = null;
         
-        if (protocol.equals("TCP/IP"))
+        try
         {
-            try
+            if (protocol.equals("TCP/IP"))
             {
                 client = new TcpClientConnector(address, port);
             }
-            catch (Exception ex)
+            else if (protocol.equals("UDP"))
             {
-                System.err.println(ex);
-                return false;
+                client = new UdpClientConnector(address, port);
             }
+            else return false;
         }
-        else if (protocol.equals("UDP"))
+        catch (Exception ex)
         {
-            
+            ex.printStackTrace();
+            return false;
         }
-        else return false;
         
         this.chatter = new NetClientChatter(clientName, client);
         

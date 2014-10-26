@@ -64,7 +64,9 @@ public class ServerView {
         this.window.getStartButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                window.getPortField().setText(controller.startServer() + "");
+                String protocol = window.getProtocolComboBox().getSelectedItem().toString();
+                
+                window.getPortField().setText(controller.startServer(protocol) + "");
             }
         });
     }

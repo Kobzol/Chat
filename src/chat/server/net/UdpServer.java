@@ -8,17 +8,18 @@ package chat.server.net;
 import chat.server.net.IClient.ClientEventListener;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.MulticastSocket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TCP/IP server implementation.
+ * UDP (multicast) server implementation.
  */
-public class TcpServer implements IServer {
+public class UdpServer implements IServer {
     private enum ServerState {
         Created,
         Running,
@@ -27,17 +28,24 @@ public class TcpServer implements IServer {
     
     private final List<IClient> connectedClients;
     
-    private final ServerSocket server;
+    private final MulticastSocket server;
     private final SocketAddress serverAddress;
     private volatile ServerState state;
     private Thread serverRunner;
     
-    private final List<ServerConnectionListener> connectionListeners;
+    private final String address;
+    private final int port;
     
-    public TcpServer(int port) throws IOException {
+    private final List<IServer.ServerConnectionListener> connectionListeners;
+    
+    public UdpServer(String address, int port) throws IOException {
         this.serverAddress = new InetSocketAddress(port);
-        this.server = new ServerSocket();
+        this.server = new MulticastSocket(port);
+        this.server.joinGroup(InetAddress.getByName(address));
         this.state = ServerState.Created;
+        
+        this.address = address;
+        this.port = port;
         
         this.connectedClients = new ArrayList<>();
         this.connectionListeners = new ArrayList<>();
@@ -46,7 +54,7 @@ public class TcpServer implements IServer {
     private void receiveClient(final TcpClient client) {
         this.connectedClients.add(client);
         
-        for (ServerConnectionListener listener : this.connectionListeners)
+        for (IServer.ServerConnectionListener listener : this.connectionListeners)
         {
             listener.onClientConnected(client);
         }
@@ -73,15 +81,7 @@ public class TcpServer implements IServer {
     public void startListening() {
         if (this.state == ServerState.Running) return;
         
-        try
-        {
-            this.server.bind(this.serverAddress);
-            this.state = ServerState.Running;
-        }
-        catch (IOException ex)
-        {
-            ex.printStackTrace();
-        }
+        this.state = ServerState.Running;
         
         this.serverRunner = new Thread(new Runnable() {
             @Override
@@ -90,15 +90,15 @@ public class TcpServer implements IServer {
                 {
                     try
                     {
-                        Socket client = server.accept();
-                        TcpClient tcpClient = new TcpClient(client);
+                        byte[] buffer = "ahoj".getBytes();
+                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(address), port);
+                        server.send(packet);
                         
-                        receiveClient(tcpClient);
-                        
+                        Thread.sleep(2000);
                     }
-                    catch (IOException ex)
+                    catch (Exception e)
                     {
-                        ex.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
             }
@@ -115,19 +115,19 @@ public class TcpServer implements IServer {
             this.serverRunner.interrupt();
             this.server.close();
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
             ex.printStackTrace();
         }
     }
 
     @Override
-    public void setServerConnectionListener(ServerConnectionListener listener) {
+    public void setServerConnectionListener(IServer.ServerConnectionListener listener) {
         this.connectionListeners.add(listener);
     }
 
     @Override
     public int getPort() {
-        return this.server.getLocalPort();
+        return this.port;
     }
 }

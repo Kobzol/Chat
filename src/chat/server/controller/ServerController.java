@@ -9,6 +9,7 @@ import chat.server.chat.ChattingRoom;
 import chat.server.net.ChatterManager;
 import chat.server.net.IServer;
 import chat.server.net.TcpServer;
+import chat.server.net.UdpServer;
 import chat.server.view.ServerView;
 
 /**
@@ -41,15 +42,28 @@ public class ServerController {
      * Start the server and returns the bound port.
      * @return port on which the server listens
      */
-    public final int startServer() {       
+    public final int startServer(String protocol) {       
         try
         {
-            this.server = new TcpServer(ServerController.SERVER_PORT);
-            this.server.startListening();
-            
-            this.chatterManager = new ChatterManager(this.server, this.chattingRoom);
-            
-            return this.server.getPort();
+            if (protocol.equals("TCP/IP"))
+            {
+                this.server = new TcpServer(ServerController.SERVER_PORT);
+                this.server.startListening();
+
+                this.chatterManager = new ChatterManager(this.server, this.chattingRoom);
+
+                return this.server.getPort();
+            }
+            else if (protocol.equals("UDP"))
+            {
+                this.server = new UdpServer("230.0.0.1", ServerController.SERVER_PORT);
+                this.server.startListening();
+                
+                this.chatterManager = new ChatterManager(this.server, this.chattingRoom);
+                
+                return this.server.getPort();
+            }
+            else return -1;
         }
         catch (Exception e)
         {

@@ -69,12 +69,15 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel1.setText("Zprávy");
 
         protocolComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TCP/IP", "UDP" }));
+        protocolComboBox.setSelectedIndex(1);
 
         jLabel3.setText("Protokol");
 
         jLabel4.setText("Port");
 
         portField.setText("1340");
+
+        serverField.setText("230.0.0.1");
 
         jLabel5.setText("Server IP");
 
@@ -97,6 +100,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        nameField.setText("Kobzol");
+
         jLabel6.setText("Jméno");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -108,9 +113,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sendButton)
                     .addComponent(messageArea, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(serverField, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
