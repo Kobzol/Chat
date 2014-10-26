@@ -33,18 +33,23 @@ public class TcpClient implements IClient {
             @Override
             public void run() {
                 try
-                {
-                    ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                        
+                {    
                     while (!inputListener.isInterrupted())
                     {
-                        synchronized(ois) {
-                            Serializable object = (Serializable) ois.readObject();
-                            receiveMessage(object);
+                        synchronized(this) {
+                            try
+                            {
+                                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                                
+                                Serializable object = (Serializable) ois.readObject();
+                                receiveMessage(object);
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                    
-                    ois.close();
                 }
                 catch (Exception e)
                 {
@@ -72,6 +77,7 @@ public class TcpClient implements IClient {
         {
             ObjectOutputStream oos = new ObjectOutputStream(this.socket.getOutputStream());
             oos.writeObject(serializable);
+            oos.flush();
             
             return true;
         }

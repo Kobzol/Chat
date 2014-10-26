@@ -7,16 +7,20 @@ package chat.klient.controller;
 
 import chat.klient.chat.IClientChatter;
 import chat.klient.chat.NetClientChatter;
+import chat.klient.gui.MainWindow;
 import chat.klient.net.IClientConnector;
 import chat.klient.net.TcpClientConnector;
 import chat.server.chat.ChattingRoom;
+import chat.server.net.IClient.ClientEventListener;
+import java.io.Serializable;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  * Relays messages between the view and model.
  */
 public class ClientController {
-    private JFrame view;
+    private MainWindow view;
     
     private final ChattingRoom chattingRoom;
     private IClientChatter chatter;
@@ -29,7 +33,7 @@ public class ClientController {
         return this.chattingRoom;
     }
     
-    public void setView(JFrame view) {
+    public void setView(MainWindow view) {
         this.view = view;
     }
     
@@ -45,7 +49,6 @@ public class ClientController {
             catch (Exception ex)
             {
                 System.err.println(ex);
-                
                 return false;
             }
         }
@@ -56,6 +59,18 @@ public class ClientController {
         else return false;
         
         this.chatter = new NetClientChatter(clientName, client);
+        
+        client.addClientEventListener(new ClientEventListener() {
+            @Override
+            public void onMessageReceived(Serializable serializable) {
+                view.appendMessage(serializable.toString());
+            }
+
+            @Override
+            public void onClientDisconnected() {
+                JOptionPane.showMessageDialog(view, "Byl jsi odpojen od chatovacího serveru.");
+            }
+        });
         
         return true;
     }

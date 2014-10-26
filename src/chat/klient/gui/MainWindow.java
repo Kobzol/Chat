@@ -19,8 +19,6 @@ import javax.swing.JOptionPane;
  */
 public class MainWindow extends javax.swing.JFrame {
     private final ClientController controller;
-    private final DefaultListModel chattersModel = new DefaultListModel();
-    
     
     /**
      * Creates new form MainWindow
@@ -47,9 +45,6 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         chatMessagesArea = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        chattersList = new javax.swing.JList();
-        jLabel2 = new javax.swing.JLabel();
         protocolComboBox = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -72,11 +67,6 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane1.setViewportView(chatMessagesArea);
 
         jLabel1.setText("Zprávy");
-
-        chattersList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(chattersList);
-
-        jLabel2.setText("Chatteři");
 
         protocolComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TCP/IP", "UDP" }));
 
@@ -118,14 +108,9 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sendButton)
                     .addComponent(messageArea, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(48, 48, 48)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 713, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(serverField, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -145,7 +130,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
                             .addComponent(nameField, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(46, Short.MAX_VALUE))
+                .addContainerGap(254, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,13 +153,9 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(serverField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(connectButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(messageArea, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -194,11 +175,9 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             public void onChattersChanged() {
-                refreshChattersList();
+                
             }
         });
-        
-        this.chattersList.setModel(this.chattersModel);
     }
     
     private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
@@ -226,21 +205,10 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_sendButtonActionPerformed
 
     /**
-     * Refreshes the list of connected chatters.
-     */
-    private void refreshChattersList() {
-        this.chattersModel.clear();
-                
-        for (IChatter chatter : this.controller.getChattingRoom().getChatters())
-        {
-            this.chattersModel.addElement(chatter);
-        }
-    }
-    /**
      * Appends a chat message to the message text area.
      * @param message chat message
      */
-    private void appendMessage(ChatMessage message) {
+    public void appendMessage(ChatMessage message) {
         String formattedMessage = message.getOwner().getName();
         formattedMessage += ": " + message.getMessage();
         formattedMessage += " [" + message.getCreationTime().get(Calendar.HOUR) + ":" + message.getCreationTime().get(Calendar.MINUTE) + ":" + message.getCreationTime().get(Calendar.SECOND) + "]" + System.lineSeparator();
@@ -248,18 +216,19 @@ public class MainWindow extends javax.swing.JFrame {
         this.chatMessagesArea.append(formattedMessage);
     }
     
+    public void appendMessage(String message) {
+        this.chatMessagesArea.append(message + System.lineSeparator());
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea chatMessagesArea;
-    private javax.swing.JList chattersList;
     private javax.swing.JButton connectButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane messageArea;
     private javax.swing.JTextArea messageField;
     private javax.swing.JTextField nameField;

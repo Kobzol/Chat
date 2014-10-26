@@ -19,13 +19,11 @@ import java.util.List;
 public class TcpClientConnector implements IClientConnector {
     private final List<ClientEventListener> eventListeners;
     private final Socket socket;
-    private final ObjectOutputStream oos;
     
     private Thread inputListener;
     
     public TcpClientConnector(String address, int port) throws IOException {
         this.socket = new Socket(address, port);
-        this.oos = new ObjectOutputStream(this.socket.getOutputStream());
         this.eventListeners = new ArrayList<>();
         
         this.startListening();
@@ -35,7 +33,10 @@ public class TcpClientConnector implements IClientConnector {
     public synchronized boolean write(Serializable serializable) {
         try
         {
-            this.oos.writeObject(serializable);
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(serializable);
+            oos.flush();
+            
             return true;
         }
         catch (IOException ex)
@@ -63,20 +64,18 @@ public class TcpClientConnector implements IClientConnector {
             @Override
             public void run() {
                 try
-                {
-                    ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                        
+                {    
                     while (!inputListener.isInterrupted())
                     {
+                        ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+                        
                         Serializable object = (Serializable) ois.readObject();
                         receiveMessage(object);
                     }
-                    
-                    ois.close();
                 }
                 catch (Exception e)
                 {
-                    // client disconnected or error occured
+                    e.printStackTrace();
                 }
                 finally
                 {

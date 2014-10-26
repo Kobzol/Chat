@@ -5,7 +5,9 @@
  */
 package chat.server.net;
 
+import chat.server.chat.ChatMessage;
 import chat.server.chat.ChattingRoom;
+import chat.server.chat.ChattingRoom.ChattingRoomChangedListener;
 import chat.server.chat.IChatter;
 import chat.server.chat.NetChatter;
 import chat.server.net.IServer.ServerConnectionListener;
@@ -50,6 +52,23 @@ public class ChatterManager {
             @Override
             public void onClientConnected(IClient client) {
                 registerChatter(client);
+            }
+        });
+        
+        this.chattingRoom.addChangeListener(new ChattingRoomChangedListener() {
+            @Override
+            public void onMessageReceived(ChatMessage message) {
+                String msg = message.getOwner().getName() + ": " + message.getMessage();
+                
+                for (IClient client : server.getClients())
+                {
+                    client.write(msg);
+                }
+            }
+
+            @Override
+            public void onChattersChanged() {
+                
             }
         });
     }
