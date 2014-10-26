@@ -5,6 +5,7 @@
  */
 package chat.klient.net;
 
+import chat.server.net.NetMessage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.DatagramPacket;
@@ -14,8 +15,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -43,7 +42,9 @@ public class UdpClientConnector implements IClientConnector {
             
     @Override
     public boolean write(Serializable serializable) {
-        byte[] buffer = serializable.toString().getBytes();
+        NetMessage msg = (NetMessage) serializable;
+        
+        byte[] buffer = (msg.getPayload().toString()).getBytes();
         DatagramPacket packet = null;
         
         try

@@ -90,11 +90,7 @@ public class UdpServer implements IServer {
                 {
                     try
                     {
-                        byte[] buffer = "ahoj".getBytes();
-                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(address), port);
-                        server.send(packet);
                         
-                        Thread.sleep(2000);
                     }
                     catch (Exception e)
                     {
